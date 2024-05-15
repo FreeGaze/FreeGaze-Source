@@ -13,3 +13,6 @@ Gaze estimation is of great importance to many scientific fields and daily appli
 * Tensorflow-gpu 2.9.0, jpeg2dct
 * ex. Ubuntu 20.04
 
+## Frequency domain gaze estimation
+
+To reduce the latency for gaze estimation system in both calibration and inference stages, we devise the frequency-domain gaze estimation. It leverages the feature extraction capability of the discrete cosine transform (DCT) and takes the frequency-domain DCT coefficients of the original RGB image as inputs for gaze estimation. Moreover, motivated by the fact that the critical content-defining information of the image is concentrated in the low end of the frequency spectrum, whereas signals in the high-frequency endare mostly trivial and are associated with noise, we further exploit the spectral compaction property of DCT toaggressively compact the essential perceptual information inthe RGB image into a few DCT coefficients. 
