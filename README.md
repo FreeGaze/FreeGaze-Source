@@ -13,7 +13,12 @@ Gaze estimation is of great importance to many scientific fields and daily appli
 * Tensorflow-gpu 2.9.0, jpeg2dct
 * ex. Ubuntu 20.04
 
+### Dataset preparation
+In our implementation, to efficiently obtain DCT coefficents of the original RGB images, we proprocess the dataset by saving all the images in the format of .jpg. We then use jpeg2dct to directly read DCT coefficients from a jpg image in the training and testing stages.
+
+
 ### System overview
+The overview design of FreeGaze is shown in the following figure, which includes three stages: the self-supervised pre-training stage, the supervised calibration stage, and the deployment stage. In the self-supervised pre-training stage, FreeGaze takes unlabeled facial images as inputs to pre-train a gaze embedding network for unsupervised gaze representation learning. Next, the pre-trained gaze embedding network is transferred to the supervised calibration stage, and serves as a feature extractor for the downstream gaze estimation task. Specifically, taking a small number of labeled facial images from the targeted subject as input, we first leverage the frequency-domain image processing module to obtain the DCT coefficients of the original RGB images. Then, we fine-tune the pre-trained gaze embedding network and the gaze estimator for subject-specific gaze estimation. Note that subject-specific calibration is essential to ensure good gaze-estimation accuracy, even for high-end eye-tracking systems. Finally, in the deployment stage, the fine-tuned gaze embedding network and the gaze estimator are used for run-time gaze estimation. 
 
 ## Frequency-domain gaze estimation
 
@@ -21,9 +26,9 @@ To reduce the latency for gaze estimation system in both calibration and inferen
 
 <img src="https://github.com/FreeGaze/FreeGaze-Source/blob/main/figures/dctProcessing.png" alt="My Image" width="500"/>
 
-In our implementation, to efficiently obtain DCT coefficents of the original RGB image, we use jpeg2dct to directly read DCT coefficients from an image in the format of .jpg.
 ## Frequency-domain contrastive gaze representation learning
 
 To overcome the data labeling hurdle of existing supervised gaze estimation systems, we propose a contrastive learning (CL)-based framework that leverages unlabeled facial images for gaze representation learning. The conventional CL are ill-suited for gaze estimation, as they focus on learning general representations that are more related to the appearance and the identity of the subjects. To resolve this challenge, we introduce a set of optimizations to enable contrastive gaze representation learning. Specifically, we devise the subject-specific negative pair sampling strategy to encourage the learning of gaze-related features and design the gaze-specific data augmentation to ensure the gaze consistency during the contrastive learning process. The two techniques lead to significant improvements in gaze estimation when compared to the conventional unsupervised method. The pipeline of the proposed frequency-domain contrastive gaze representation learning framework is shown as below:
 
 <img src="https://github.com/FreeGaze/FreeGaze-Source/blob/main/figures/frequencyCL.png" alt="My Image" width="500"/>
+
