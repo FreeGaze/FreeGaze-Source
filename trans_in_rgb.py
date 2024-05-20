@@ -6,21 +6,35 @@ import cv2
 import matplotlib.pyplot as plt
 
 
-def random_crop_resize(image, min_ratio=0.4, max_ratio=0.99):
+def random_crop_resize(image, left_landmark, right_landmark, min_ratio=0.4, max_ratio=0.99):
     h, w = image.shape[0: 2]
+    left_landmark = np.clip(left_landmark, 1, h-1)
+    right_landmark = np.clip(right_landmark, 1, w-1)
     ratio = random.random()
     scale = min_ratio + ratio * (max_ratio - min_ratio)
     new_h = int(h * scale)
     new_w = int(w * scale)
-    y = int(np.random.randint(0, h - new_h) / 5 * 2)
-    length = w - new_w
-    ancho1 = int(length / 4)
-    ancho2 = int(length / 4 * 3)
+
+    length_w = w - new_w
+    length_h = h - new_h
     prob = random.random()
     if prob <= 0.5:
-        x = np.random.randint(0, ancho1)
+        # using right eye landmark
+        upper_x = np.minimum(length_w, right_landmark[0])
+        upper_y = np.minimum(length_h, right_landmark[1])
+        lower_x = np.maximum(0, right_landmark[2] - new_w)
+        lower_y = np.maximum(0, right_landmark[3] - new_h)
+        x = np.random.randint(lower_x, upper_x)
+        y = np.random.randint(lower_y, upper_y)
     else:
-        x = np.random.randint(ancho2, length)
+        # using left eye landmark
+        upper_x = np.minimum(length_w, left_landmark[0])
+        upper_y = np.minimum(length_h, left_landmark[1])
+        lower_x = np.maximum(0, left_landmark[2] - new_w)
+        lower_y = np.maximum(0, left_landmark[3] - new_h)
+        x = np.random.randint(lower_x, upper_x)
+        y = np.random.randint(lower_y, upper_y)
+
     image = image[y:y+new_h, x:x+new_w, :]
     image = cv2.resize(image, (h,w))
 
@@ -54,23 +68,14 @@ def blur_or_noise(image):
     return image
 
 
-def apply_transformation(image, trans_num):
+def apply_transformation(image, trans_num, left_landmark, right_landmark):
     if trans_num == 1:
         x = color_distortion(image)
     elif trans_num == 2:
-        x = random_crop_resize(image)
+        x = random_crop_resize(image, left_landmark, right_landmark)
     elif trans_num == 3:
         x = blur_or_noise(image)
     else:
         x = image
 
     return x
-
-if __name__ == '__main__':
-    jpeg_file = '/home/lingyu/CLAE_Advdrop/Personalize/subject0102/1.jpg'
-    img = io.imread(jpeg_file)/255.
-    new = cv2.GaussianBlur(img, (5,5), 0.5)
-    #new = color_distortion(img)
-    plt.imshow(new)
-    plt.show()
-    a = 5
