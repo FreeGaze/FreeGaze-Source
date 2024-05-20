@@ -14,8 +14,12 @@ Gaze estimation is of great importance to many scientific fields and daily appli
 * ex. Ubuntu 20.04
 
 ### Dataset preparation
-In our implementation, to efficiently obtain DCT coefficents of the original RGB images, we proprocess the dataset by saving all the images in the format of .jpg. We then use jpeg2dct to directly read DCT coefficients from a jpg image in the training and testing stages.
+In our implementation, to efficiently obtain DCT coefficents of the original RGB images, we proprocess the dataset by saving all the images in the format of .jpg. We then use jpeg2dct to directly read DCT coefficients from a jpg image in the training and testing stages. Moreover, we apply facial landmark detection to locate the positions of eyes and save the coordinates of periocular bounding boxes for each images as numpy arraies.
 
+### Codes
+* The file Contrastive_gaze_representation_learning.ipynb contains the main function for contrastive gaze representation learning.
+* The file common_functions.py includes how to calculate the average angular error given a batch of images and gaze annotations.
+* The file trans_in_rgb.py details the data augmentation we adopted in this project.
 
 ## System Overview
 The overview design of FreeGaze is shown in the following figure, which includes three stages: the self-supervised pre-training stage, the supervised calibration stage, and the deployment stage. In the self-supervised pre-training stage, FreeGaze takes unlabeled facial images as inputs to pre-train a gaze embedding network for unsupervised gaze representation learning. Next, the pre-trained gaze embedding network is transferred to the supervised calibration stage, and serves as a feature extractor for the downstream gaze estimation task. Specifically, taking a small number of labeled facial images from the targeted subject as input, we first leverage the frequency-domain image processing module to obtain the DCT coefficients of the original RGB images. Then, we fine-tune the pre-trained gaze embedding network and the gaze estimator for subject-specific gaze estimation. Note that subject-specific calibration is essential to ensure good gaze-estimation accuracy, even for high-end eye-tracking systems. Finally, in the deployment stage, the fine-tuned gaze embedding network and the gaze estimator are used for run-time gaze estimation. 
@@ -37,7 +41,7 @@ To overcome the data labeling hurdle of existing supervised gaze estimation syst
 
 ## Citation
 
-If you use this code in your research, please cite our paper:
+Please cite the following paper in your publications if the code helps your research.
 
 <div style="border: 1px solid #ccc; padding: 10px; background-color: #f9f9f9; border-radius: 5px;">
 <pre>
